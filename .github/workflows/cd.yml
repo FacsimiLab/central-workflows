@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
 
-  semantic-release:
+  cd:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository at workflow SHA

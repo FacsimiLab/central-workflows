@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  semantic-release:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout Repository at workflow sha
