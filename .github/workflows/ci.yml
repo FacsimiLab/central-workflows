@@ -48,7 +48,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  continuous-integration:
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Checkout Repository at workflow sha
