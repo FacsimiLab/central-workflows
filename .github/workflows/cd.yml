@@ -1,0 +1,85 @@
+name: Continuous Delivery
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to checkout (branch or SHA)'
+        required: true
+        default: 'release'
+        type: string
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+      FACSIMILAB_BOT_SSHKEY:
+        required: false
+      FACSIMILAB_BOT_SSH_PUBKEY:
+        required: false
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+jobs:
+
+  commitlint:
+    # Only run for non-draft PRs or direct pushes
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+
+      - name: Commitlint
+        uses: wagoid/commitlint-github-action@v6
+
+  semantic-release:
+    runs-on: ubuntu-latest
+    needs: commitlint
+    steps:
+      - name: Checkout Repository at workflow SHA
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.ref }}
+
+      - name: Force correct release branch on workflow SHA
+        run: git checkout -B ${{ inputs.ref }}
+
+      - name: Python Semantic Release
+        id: semvar
+        uses: pranavmishra90/semvar-docker@v0.2.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_email: "195262995+facsimilab-bot@users.noreply.github.com"
+          ssh_private_signing_key: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
+          ssh_public_signing_key: ${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}
+          vcs_release: "true"
+          changelog: "true"
+          commit: "true"
+          tag: "true"
+          push: "true"
+          root_options: "-v"
+
+      - name: Update main branch
+        run: |
+          git checkout main
+          git merge release -m 'ci: merge release into main'
+          git push origin main
+
+      - name: Workflow Status
+        run: |
+          echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          echo "Version: ${{ steps.semvar.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          printf "Tags: \n$(git tag -l)" >> $GITHUB_STEP_SUMMARY
+          echo "Released: ${{ steps.semvar.outputs.released }}" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY
