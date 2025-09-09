@@ -9,8 +9,6 @@ on:
         default: 'release'
         type: string
     secrets:
-      GITHUB_TOKEN:
-        required: true
       FACSIMILAB_BOT_SSHKEY:
         required: false
       FACSIMILAB_BOT_SSH_PUBKEY:
