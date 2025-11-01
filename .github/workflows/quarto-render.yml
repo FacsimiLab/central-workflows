@@ -62,13 +62,15 @@ jobs:
       - name: Render Quarto Project
         uses: quarto-dev/quarto-actions/render@v2
 
-      - name: Commit rendered files
+      - name: Configure Git
         run: |
           git config user.name ${{ inputs.git-user-name }}
           git config user.email ${{ inputs.git-user-email }}
           git config user.signingkey "${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}"
           git config --list
 
+      - name: Commit rendered files
+        run: |
           git checkout -B ${{ inputs.publish-branch }}
           git add .
           git commit -S -m "ci(quarto): rendered using Quarto" || git commit --no-gpg-sign -m "ci(quarto): rendered using Quarto"
