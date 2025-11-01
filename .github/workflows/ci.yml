@@ -75,22 +75,3 @@ jobs:
           vcs_release: ${{ inputs.vcs_release }}
           push: ${{ inputs.push }}
           root_options: "-v"
-
-      - name: Workflow Status
-        run: |
-          set -euo pipefail
-          trap 'echo "Error: command ${BASH_COMMAND} exited on line ${BASH_LINENO[0]}" >&2; exit 1' ERR
-
-          if [[ -z "${GITHUB_STEP_SUMMARY:-}" ]]; then
-            echo "## Python Semantic Release - GitHub Action" > "$GITHUB_STEP_SUMMARY"
-          fi
-
-          {
-            echo "## Python Semantic Release - GitHub Action"
-            echo ""
-            echo "Version: ${{ steps.psr-ci.outputs.version }}"
-            printf "Tags:\n\n%s\n\n" "$(git tag -l)"
-            echo "Released: ${{ steps.psr-ci.outputs.released }}"
-            echo ""
-            cat CHANGELOG.md
-          } >> "$GITHUB_STEP_SUMMARY"
