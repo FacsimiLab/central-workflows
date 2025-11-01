@@ -62,7 +62,7 @@ jobs:
         run: git checkout -B ${{ inputs.ref }}
 
       - name: Python Semantic Release
-        id: semvar
+        id: semver
         uses: pranavmishra90/semvar-docker@v0.2.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -87,8 +87,8 @@ jobs:
         run: |
           echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
-          echo "Version: ${{ steps.semvar.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "Version: ${{ steps.semver.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           printf "Tags: \n$(git tag -l)" >> $GITHUB_STEP_SUMMARY
-          echo "Released: ${{ steps.semvar.outputs.released }}" >> $GITHUB_STEP_SUMMARY
+          echo "Released: ${{ steps.semver.outputs.released }}" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
           cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY
