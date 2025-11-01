@@ -28,7 +28,6 @@ on:
 
 permissions: 
     contents: write
-    pages: read
 
 jobs:
   quarto-render:
