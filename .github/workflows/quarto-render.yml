@@ -68,10 +68,13 @@ jobs:
           git config --global user.signingkey "${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}"
           git config --list
 
+          eval "$(ssh-agent)"
+          ssh-add - <<< "${{ secrets.FACSIMILAB_BOT_SSHKEY }}"
+
       - name: Commit rendered files
         run: |
           git fetch origin
-          git checkout -B origin/${{ inputs.publish-branch }} || git checkout -b ${{ inputs.publish-branch }}
+          git checkout -b ${{ inputs.publish-branch }} || git checkout -B ${{ inputs.publish-branch }}
           git merge ${{ inputs.ref }} --allow-unrelated-histories --strategy-option theirs
           git add .
           git commit -S -m "ci(quarto): rendered using Quarto" || git commit --no-gpg-sign -m "ci(quarto): rendered using Quarto"
