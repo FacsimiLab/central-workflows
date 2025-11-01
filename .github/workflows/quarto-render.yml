@@ -70,7 +70,10 @@ jobs:
 
       - name: Commit rendered files
         run: |
+          git fetch origin
           git checkout -B ${{ inputs.publish-branch }}
+          git pull origin ${{ inputs.publish-branch }} --rebase
+          git merge ${{ inputs.ref }} --allow-unrelated-histories --strategy-option theirs
           git add .
           git commit -S -m "ci(quarto): rendered using Quarto" || git commit --no-gpg-sign -m "ci(quarto): rendered using Quarto"
           git push origin ${{ inputs.publish-branch }}
