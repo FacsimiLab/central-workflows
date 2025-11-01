@@ -78,6 +78,8 @@ jobs:
 
       - name: Workflow Status
         run: |
+          set -euo pipefail
+          trap 'echo "Error: command \"${BASH_COMMAND}\" exited on line ${BASH_LINENO[0]}"; exit 1' ERR
           echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Version: ${{ steps.psr-ci.outputs.version }} >> $GITHUB_STEP_SUMMARY
