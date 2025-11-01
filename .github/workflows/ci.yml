@@ -79,11 +79,18 @@ jobs:
       - name: Workflow Status
         run: |
           set -euo pipefail
-          trap 'echo "Error: command \"${BASH_COMMAND}\" exited on line ${BASH_LINENO[0]}"; exit 1' ERR
-          echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Version: ${{ steps.psr-ci.outputs.version }} " >> $GITHUB_STEP_SUMMARY
-          printf "Tags: \n\n$(git tag -l)\n\n" >> $GITHUB_STEP_SUMMARY
-          echo "Released: ${{ steps.psr-ci.outputs.released }} " >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY
+          trap 'echo "Error: command ${BASH_COMMAND} exited on line ${BASH_LINENO[0]}" >&2; exit 1' ERR
+
+          if [[ -z "${GITHUB_STEP_SUMMARY:-}" ]]; then
+            echo "## Python Semantic Release - GitHub Action" > "$GITHUB_STEP_SUMMARY"
+          fi
+
+          {
+            echo "## Python Semantic Release - GitHub Action"
+            echo ""
+            echo "Version: ${{ steps.psr-ci.outputs.version }}"
+            printf "Tags:\n\n%s\n\n" "$(git tag -l)"
+            echo "Released: ${{ steps.psr-ci.outputs.released }}"
+            echo ""
+            cat CHANGELOG.md
+          } >> "$GITHUB_STEP_SUMMARY"
