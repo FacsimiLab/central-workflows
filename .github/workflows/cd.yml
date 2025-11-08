@@ -66,6 +66,17 @@ jobs:
       - name: Force correct release branch on workflow SHA
         run: git checkout -B ${{ inputs.ref }}
 
+      - name: Checkout central workflows
+        uses: actions/checkout@v5
+        with:
+          repository: FacsimiLab/central-workflows
+          path: .central-workflows
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Get the latest CHANGELOG from the `log` branch or initialize it
         run: |
           if git ls-remote --exit-code --heads origin log; then

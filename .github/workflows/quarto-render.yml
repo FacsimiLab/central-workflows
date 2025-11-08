@@ -58,6 +58,12 @@ jobs:
         run: |
           git checkout -B ${{ github.ref_name }}
 
+      - name: Checkout central workflows
+        uses: actions/checkout@v5
+        with:
+          repository: FacsimiLab/central-workflows
+          path: .central-workflows
+
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -79,15 +85,15 @@ jobs:
         with:
           tinytex: true
 
-      - name: Create python venv
+      - name: Create Python venv
         run: |
-          bash .github/workflows/scripts/setup-venv.sh
+          bash .central-workflows/.github/workflows/scripts/setup-venv.sh
           echo "PYTHONPATH=$(pwd)/.venv/bin" >> $GITHUB_ENV
           echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
 
       - name: Render Quarto Project
         run: |
-          bash .github/workflows/scripts/quarto-render.sh "${{ inputs.quarto-profile }}"
+          bash .central-workflows/.github/workflows/scripts/quarto-render.sh "${{ inputs.quarto-profile }}"
 
       - name: Configure Git
         run: |
@@ -99,4 +105,4 @@ jobs:
       - name: Commit rendered files
         run: |
           git config user.name "FacsimiLab Bot"
-          bash .github/workflows/scripts/static-site-git.sh
+          bash .central-workflows/.github/workflows/scripts/static-site-git.sh
