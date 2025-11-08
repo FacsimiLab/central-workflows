@@ -2,8 +2,10 @@
 set -euo pipefail
 
 SITE_DIR="${1:-_site}"
-WORKTREE_DIR="worktree/gh-pages"
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 BRANCH="gh-pages"
+WORKTREE_DIR="worktree/$BRANCH"
+
 
 
 # ensure _manuscript exists
@@ -41,7 +43,21 @@ if ! git commit -S -m "ci(quarto): update gh-pages"; then
   git commit --no-gpg-sign -m "ci(quarto): update gh-pages"
 fi
 
-push to origin
+# push to origin
 git push origin "$BRANCH"
 
 echo "gh-pages updated successfully."
+
+# Cleanup
+cd $REPO_ROOT
+git worktree remove -f "$WORKTREE_DIR"
+echo "Cleaned up worktree at $WORKTREE_DIR"
+
+rm -rf "$WORKTREE_DIR" || echo "Worktree directory $WORKTREE_DIR already removed"
+echo "Removed worktree directory $WORKTREE_DIR"
+
+git worktree prune || true
+echo "Pruned git worktrees"
+
+echo "Static site deployment completed successfully."
+#--------------------------------------------------------------------------------------
