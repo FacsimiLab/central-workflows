@@ -55,7 +55,7 @@ concurrency:
 jobs:
 
   continuous-delivery:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.action-runs-on }}
     steps:
       - name: Checkout Repository at workflow SHA
         uses: actions/checkout@v5
@@ -65,6 +65,18 @@ jobs:
 
       - name: Force correct release branch on workflow SHA
         run: git checkout -B ${{ inputs.ref }}
+
+      - name: Get the latest CHANGELOG from the `log` branch or initialize it
+        run: |
+          if git ls-remote --exit-code --heads origin log; then
+            echo "log branch found — fetching CHANGELOG.md"
+            git fetch origin log
+            git checkout origin/log -- CHANGELOG.md
+          else
+            echo "log branch not found — creating empty CHANGELOG.md"
+            touch CHANGELOG.md
+            git add -A CHANGELOG.md || true
+          fi
 
       - name: Python Semantic Release
         id: semver

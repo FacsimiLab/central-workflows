@@ -3,6 +3,11 @@ name: Python Tests
 on:
   workflow_call:
     inputs:
+      action-runs-on:
+        description: 'The type of runner to run the job on'
+        required: false
+        default: 'ubuntu-latest' # other common option: "self-hosted"
+        type: string
       python-versions:
         description: "Python versions to test against"
         required: false
@@ -11,7 +16,7 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.action-runs-on }}
     strategy:
       fail-fast: false
       matrix:
