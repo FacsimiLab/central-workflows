@@ -92,7 +92,7 @@ jobs:
       - name: List and delete pre-release tags
         id: list_tags
         run: |
-          echo "Searching for tags containing 'rc'..."
+          echo "Searching for tags containing 'rc', 'main', 'beta', or 'alpha'."
           TAGS=$(git tag -l "*-rc*" "*-main*" "*-beta*" "*-alpha*")
           echo "Found tags:"
           echo "$TAGS"
@@ -111,8 +111,8 @@ jobs:
             done
           fi
 
-          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'.
-          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'. >> $GITHUB_STEP_SUMMARY
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'."
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'." >> $GITHUB_STEP_SUMMARY
 
       - name: Python Semantic Release
         id: semver
