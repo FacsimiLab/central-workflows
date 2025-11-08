@@ -25,6 +25,14 @@ if ! command -v quarto >/dev/null 2>&1; then
   exit 1
 fi
 
+# Clean up existing directories
+for dir in "_site" "_manuscript" "_freeze" ".quarto" ".venv"; do
+    if [ -d "$dir" ]; then
+        echo "Removing existing directory: $dir"
+        rm -rf -- "$PWD/$dir"
+    fi
+done
+
 # Setup the python virtual environment (if the helper exists)
 SETUP_SCRIPT=".central-workflows/.github/workflows/scripts/setup-venv.sh"
 if [ -f "$SETUP_SCRIPT" ]; then
