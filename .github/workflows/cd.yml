@@ -111,6 +111,7 @@ jobs:
           echo ""  >> $GITHUB_STEP_SUMMARY
           echo "Version: ${{ steps.semver.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           printf "Tags: \n$(git tag -l)" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
           echo "Released: ${{ steps.semver.outputs.released }}" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
           cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY

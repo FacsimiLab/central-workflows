@@ -5,6 +5,7 @@ SITE_DIR="${1:-_site}"
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 BRANCH="gh-pages"
 WORKTREE_DIR="worktree/$BRANCH"
+CURRENT_REF=$(git rev-parse --abbrev-ref HEAD)
 
 
 
@@ -41,8 +42,9 @@ cp -a $REPO_ROOT/readme.md . || echo "No readme.md found, skipping copy." >> $GI
 
 # commit changes
 git add -A
-if ! git commit -S -m "ci(quarto): update gh-pages"; then
-  git commit --no-gpg-sign -m "ci(quarto): update gh-pages"
+COMMIT_MESSAGE="ci(quarto): update gh-pages - $CURRENT_REF"
+if ! git commit -S -m "$COMMIT_MESSAGE"; then
+  git commit --no-gpg-sign -m "$COMMIT_MESSAGE"
 fi
 
 # push to origin
