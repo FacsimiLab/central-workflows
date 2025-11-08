@@ -5,7 +5,7 @@ SITE_DIR="${1:-_site}"
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 BRANCH="gh-pages"
 WORKTREE_DIR="worktree/$BRANCH"
-CURRENT_REF=$(git rev-parse --abbrev-ref HEAD)
+CURRENT_REF=$(git rev-parse --short HEAD)
 
 
 
