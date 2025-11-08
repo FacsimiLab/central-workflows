@@ -26,7 +26,7 @@ if ! command -v quarto >/dev/null 2>&1; then
 fi
 
 # Setup the python virtual environment (if the helper exists)
-SETUP_SCRIPT=".github/workflows/scripts/setup-venv.sh"
+SETUP_SCRIPT=".central-workflows/.github/workflows/scripts/setup-venv.sh"
 if [ -f "$SETUP_SCRIPT" ]; then
   bash "$SETUP_SCRIPT"
 else
