@@ -3,6 +3,11 @@ name: Quarto Render
 on:
   workflow_call:
     inputs:
+      action-runs-on:
+        description: 'The type of runner to run the job on'
+        required: false
+        default: 'ubuntu-latest'
+        type: string
       ref:
         description: 'Git ref to checkout (branch or SHA)'
         required: true
@@ -16,14 +21,23 @@ on:
         required: false
         type: string
         default: '195262995+facsimilab-bot@users.noreply.github.com'
+      quarto_profile:
+        description: 'The Quarto profile to use for rendering'
+        required: false
+        type: string
+      quarto_output_dir:
+        description: 'The output directory for the rendered Quarto site'
+        required: false
+        default: '_site'
+        type: string
       publish-branch:
         required: false
         type: string
         default: 'gh-pages'
     secrets:
-      FACSIMILAB_BOT_SSHKEY:
+      SSH_PRIVATE_KEY:
         required: false
-      FACSIMILAB_BOT_SSH_PUBKEY:
+      SSH_PUBLIC_KEY:
         required: false
 
 permissions: 
@@ -31,22 +45,29 @@ permissions:
 
 jobs:
   quarto-render:
-    runs-on: self-hosted
+    runs-on: ${{ inputs.action-runs-on }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
         with:
           ssh-key: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
-          persist-credentials: true
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+          
+      - name: Setup | Force correct release branch on workflow SHA
+        run: |
+          git checkout -B ${{ github.ref_name }}
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
 
       - name: Install GH CLI
         uses: dev-hanz-ops/install-gh-cli-action@v0.2.1
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
-
-      - name: Set up Python
-        run: uv python install
 
       - name: Check for Quarto installation
         run: quarto --version || exit 1
@@ -58,8 +79,15 @@ jobs:
         with:
           tinytex: true
 
+      - name: Create python venv
+        run: |
+          bash .github/workflows/scripts/setup-venv.sh
+          echo "PYTHONPATH=$(pwd)/.venv/bin" >> $GITHUB_ENV
+          echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
+
       - name: Render Quarto Project
-        uses: quarto-dev/quarto-actions/render@v2
+        run: |
+          bash .github/workflows/scripts/quarto-render.sh "${{ inputs.quarto_profile }}"
 
       - name: Configure Git
         run: |
@@ -68,14 +96,7 @@ jobs:
           git config --global user.signingkey "${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}"
           git config --list
 
-          eval "$(ssh-agent)"
-          ssh-add - <<< "${{ secrets.FACSIMILAB_BOT_SSHKEY }}"
-
       - name: Commit rendered files
         run: |
-          git fetch origin
-          git checkout -b ${{ inputs.publish-branch }} || git checkout -B ${{ inputs.publish-branch }}
-          git merge ${{ inputs.ref }} --allow-unrelated-histories --strategy-option theirs
-          git add .
-          git commit -S -m "ci(quarto): rendered using Quarto" || git commit --no-gpg-sign -m "ci(quarto): rendered using Quarto"
-          git push -u origin ${{ inputs.publish-branch }} --force
+          git config user.name "FacsimiLab Bot"
+          bash .github/workflows/scripts/static-site-git.sh

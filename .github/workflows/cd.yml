@@ -3,6 +3,11 @@ name: Continuous Delivery
 on:
   workflow_call:
     inputs:
+      action-runs-on:
+        description: 'The type of runner to run the job on'
+        required: false
+        default: 'ubuntu-latest'
+        type: string
       ref:
         description: 'Git ref to checkout (branch or SHA)'
         required: true
@@ -33,9 +38,9 @@ on:
         type: string
         default: 'true'
     secrets:
-      FACSIMILAB_BOT_SSHKEY:
+      SSH_PRIVATE_KEY:
         required: false
-      FACSIMILAB_BOT_SSH_PUBKEY:
+      SSH_PUBLIC_KEY:
         required: false
 
 permissions:
