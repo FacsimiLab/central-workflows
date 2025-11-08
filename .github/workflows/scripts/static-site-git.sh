@@ -34,8 +34,10 @@ git switch -C "$BRANCH" "origin/$BRANCH"
 git reset --hard
 git clean -fdx
 
-# copy manuscript contents
+# copy $SITE_DIR contents
 cp -a ../../$SITE_DIR/. .
+cp -a $REPO_ROOT/CHANGELOG.md . || echo "No CHANGELOG.md found, skipping copy." >> $GITHUB_STEP_SUMMARY
+cp -a $REPO_ROOT/readme.md . || echo "No readme.md found, skipping copy." >> $GITHUB_STEP_SUMMARY
 
 # commit changes
 git add -A
