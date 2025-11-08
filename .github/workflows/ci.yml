@@ -75,6 +75,15 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Convert HTTPS remote to SSH
+        run: |
+          HTTPS_URL=$(git remote get-url origin)
+          if [[ "$HTTPS_URL" == https://github.com/* ]]; then
+            SSH_URL=$(echo "$HTTPS_URL" | sed -E 's#https://github.com/#git@github.com:#')
+            git remote set-url origin "$SSH_URL"
+          fi
+          git remote -v
           
       - name: Get the latest CHANGELOG from the `log` branch or initialize it
         run: |
