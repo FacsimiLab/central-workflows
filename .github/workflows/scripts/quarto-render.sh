@@ -53,7 +53,7 @@ if [ -f "_quarto-$INPUT_PROFILE.yml" ]; then
     quarto render --profile $INPUT_PROFILE
 
 else
-    echo "Quarto profile file _quarto-$INPUT_PROFILE.yml not found; skipping profile
+    echo "Quarto profile file _quarto-$INPUT_PROFILE.yml not found. skipping profile"
 fi
 
 echo "Quarto rendering completed successfully."
