@@ -21,11 +21,11 @@ on:
         required: false
         type: string
         default: '195262995+facsimilab-bot@users.noreply.github.com'
-      quarto_profile:
+      quarto-profile:
         description: 'The Quarto profile to use for rendering'
         required: false
         type: string
-      quarto_output_dir:
+      quarto-output-dir:
         description: 'The output directory for the rendered Quarto site'
         required: false
         default: '_site'
@@ -87,7 +87,7 @@ jobs:
 
       - name: Render Quarto Project
         run: |
-          bash .github/workflows/scripts/quarto-render.sh "${{ inputs.quarto_profile }}"
+          bash .github/workflows/scripts/quarto-render.sh "${{ inputs.quarto-profile }}"
 
       - name: Configure Git
         run: |
