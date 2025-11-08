@@ -37,7 +37,8 @@ fi
 if [ -f ".venv/bin/activate" ]; then
   source ".venv/bin/activate" || { echo "python venv could not be activated" >&2; exit 1; }
 else
-  echo "python venv could not be activated: .venv/bin/activate missing" >&2
+  echo "[ERROR] python venv could not be activated: .venv/bin/activate missing" >&2
+  echo "[ERROR] python venv could not be activated: .venv/bin/activate missing" >> $GITHUB_STEP_SUMMARY
   exit 1
 fi
 
@@ -48,12 +49,18 @@ fi
 echo "Rendering Quarto project..."
 quarto render --no-cache
 
+echo "Rendered default Quarto profile." >> $GITHUB_STEP_SUMMARY
+
 if [ -f "_quarto-$INPUT_PROFILE.yml" ]; then
     echo "Rendering Quarto profile: $INPUT_PROFILE"
     quarto render --profile $INPUT_PROFILE
+    echo "Rendered Quarto profile: $INPUT_PROFILE" >> $GITHUB_STEP_SUMMARY
 
 else
-    echo "Quarto profile file _quarto-$INPUT_PROFILE.yml not found. skipping profile"
+    echo "Quarto profile file _quarto-$INPUT_PROFILE.yml not found. skipping profile" 
+
+    echo "Quarto profile file _quarto-$INPUT_PROFILE.yml not found. skipping profile" >> $GITHUB_STEP_SUMMARY
+
 fi
 
 echo "Quarto rendering completed successfully."
