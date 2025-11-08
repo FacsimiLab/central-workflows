@@ -50,7 +50,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
         with:
-          ssh-key: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           fetch-depth: 1
           ref: ${{ github.sha }}
           
@@ -61,7 +61,7 @@ jobs:
       - name: Set up SSH agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install GH CLI
         uses: dev-hanz-ops/install-gh-cli-action@v0.2.1
@@ -93,7 +93,7 @@ jobs:
         run: |
           git config --global user.name ${{ inputs.git-user-name }}
           git config --global user.email ${{ inputs.git-user-email }}
-          git config --global user.signingkey "${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}"
+          git config --global user.signingkey "${{ secrets.SSH_PUBLIC_KEY }}"
           git config --list
 
       - name: Commit rendered files
