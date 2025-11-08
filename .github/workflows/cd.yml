@@ -89,6 +89,31 @@ jobs:
             git add -A CHANGELOG.md || true
           fi
 
+      - name: List and delete pre-release tags
+        id: list_tags
+        run: |
+          echo "Searching for tags containing 'rc'..."
+          TAGS=$(git tag -l "*-rc*" "*-main*" "*-beta*" "*-alpha*")
+          echo "Found tags:"
+          echo "$TAGS"
+          if [ -z "$TAGS" ]; then
+            echo "No pre-release tags found."
+            echo "tags_to_delete=" > tags.log
+          else
+            echo "tags_to_delete=$TAGS" > tags.log
+
+            echo "Deleting local tags..."
+            echo $TAGS | xargs -n 1 git tag -d
+
+            echo "Deleting remote tags..."
+            for TAG in $TAGS; do
+              git push origin --delete $TAG || echo "Failed to delete $TAG from remote."
+            done
+          fi
+
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'.
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'. >> $GITHUB_STEP_SUMMARY
+
       - name: Python Semantic Release
         id: semver
         uses: pranavmishra90/semvar-docker@v0.2.0
