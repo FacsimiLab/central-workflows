@@ -102,7 +102,7 @@ jobs:
 
       - name: Render Quarto Project
         run: |
-          bash .central-workflows/.github/workflows/scripts/quarto-render.sh "${{ inputs.quarto-profile }}"
+          uv run render.py || bash .central-workflows/.github/workflows/scripts/quarto-render.sh "${{ inputs.quarto-profile }}"
 
       - name: Configure Git
         run: |
