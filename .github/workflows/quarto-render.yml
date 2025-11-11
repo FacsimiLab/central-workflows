@@ -111,7 +111,8 @@ jobs:
           git config --global user.signingkey "${{ secrets.SSH_PUBLIC_KEY }}"
           git config --list
 
-      - name: Commit rendered files
+      - name: Commit rendered files to branch gh-pages
         run: |
           git config user.name "FacsimiLab Bot"
-          bash .central-workflows/.github/workflows/scripts/static-site-git.sh
+          echo "Using ${{ inputs['quarto-output-dir'] }} for gh-pages"
+          bash .central-workflows/.github/workflows/scripts/static-site-git.sh ${{ inputs['quarto-output-dir'] }}
