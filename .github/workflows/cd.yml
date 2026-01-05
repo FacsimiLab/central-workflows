@@ -62,7 +62,7 @@ jobs:
     runs-on: ${{ inputs.action-runs-on }}
     steps:
       - name: Checkout Repository at workflow SHA
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ inputs.ref }}
@@ -71,7 +71,7 @@ jobs:
         run: git checkout -B ${{ inputs.ref }}
 
       - name: Checkout central workflows
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: FacsimiLab/central-workflows
           path: .central-workflows
@@ -166,7 +166,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Repository at workflow SHA
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ inputs.ref }}
