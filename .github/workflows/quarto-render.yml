@@ -102,7 +102,7 @@ jobs:
 
       - name: Render Quarto Project
         run: |
-          uv run render.py || bash .central-workflows/.github/workflows/scripts/quarto-render.sh "${{ inputs.quarto-profile }}"
+          uv run render.py || bash .central-workflows/scripts/quarto/quarto-render.sh "${{ inputs.quarto-profile }}"
 
       - name: Configure Git
         run: |
@@ -115,4 +115,4 @@ jobs:
         run: |
           git config user.name "FacsimiLab Bot"
           echo "Using ${{ inputs['quarto-output-dir'] }} for gh-pages"
-          bash .central-workflows/.github/workflows/scripts/static-site-git.sh ${{ inputs['quarto-output-dir'] }}
+          bash .central-workflows/scripts/static-site/static-site-git.sh ${{ inputs['quarto-output-dir'] }}
