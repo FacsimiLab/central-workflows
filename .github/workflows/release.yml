@@ -160,6 +160,12 @@ jobs:
           push: ${{ inputs.push }}
           root_options: ${{ steps.psr-root-options.outputs.root_options }}
 
+      - name: Add logger to workflow summary
+        run: |
+          echo "## Logger Output" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          cat $LOG_FILE >> $GITHUB_STEP_SUMMARY || echo "No log output available."
+
       - name: Workflow Status
         run: |
           echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY

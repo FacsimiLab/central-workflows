@@ -30,8 +30,7 @@ create_log_file() {
 
     if [ ! -f "$file" ]; then
         mkdir -p "$(dirname "$file")" || { echo "Failed to create directory for $file" >&2; return 1; }
-        echo "Docker build log file" > "$file"
-        echo "Created log file: $file"
+        echo "Created log file: $file" > "$file"
         cat "$file"
     else
         echo "Log file exists: $file"

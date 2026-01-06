@@ -12,6 +12,7 @@ cd "$REPO_ROOT"
 
 . ./scripts/logger/bash-logger.sh
 create_log_file "$LOG_FILE"
+echo "*.log" >> .github/log/.gitignore
 
 mkdir -p "$WT_PATH"
 
@@ -20,17 +21,32 @@ CURRENT_BRANCH_SHA=$(git rev-parse --short HEAD)
 
 if git ls-remote --exit-code --heads "$REMOTE" "$BRANCH"; then
 
-  echo "[INFO] Existing `$BRANCH` branch found — fetching CHANGELOG.md"
-  d
-  git worktree add \
-    --track \
-    -b "$BRANCH" \
+  logger INFO "Existing $BRANCH branch found — fetching CHANGELOG.md"
+
+  if [ -d "$WT_PATH" ] && git -C "$WT_PATH" rev-parse --is-inside-work-tree &>/dev/null; then
+    logger INFO "Worktree at '$WT_PATH' already exists."
+  else
+    logger INFO "Creating worktree at '$WT_PATH'."
+    
+    git worktree add \
+    "$BRANCH" \
     "$WT_PATH" \
-    "$REMOTE/$BRANCH"
+    --track \
+    "$REMOTE/$BRANCH" || logger INFO "Worktree for '$BRANCH' already exists."
+  fi
+
+
+
+  (cd "$WT_PATH"
+   git checkout "$BRANCH"
+   git fetch ${REMOTE}
+   git merge "$REMOTE/$BRANCH" "$BRANCH" -m "ci: updated the log branch from $REMOTE/$BRANCH"
+  )
+
 
 else
   # Create an orphaned worktree branch called "log"
-  echo "[INFO] No existing '$BRANCH' branch found — creating new orphaned branch"
+  logger INFO "No existing '$BRANCH' branch found — creating new orphaned branch"
 
   git worktree add \
     --orphan \
@@ -42,28 +58,28 @@ fi
 # Start a subshell to work within the worktree
 (
   cd "$WT_PATH"
-  echo "Changed directory to the worktree at $(pwd)"
+  logger INFO "Changed directory to the worktree at $(pwd)"
 
-  cp "$REPO_ROOT/CHANGELOG.md" CHANGELOG.md 2>/dev/null || echo "Could not copy existing CHANGELOG.md"
+  cp "$REPO_ROOT/CHANGELOG.md" CHANGELOG.md 2>/dev/null || logger WARN "Could not copy existing CHANGELOG.md"
 
   printf "\n\n"
 
   # Stage and commit the (possibly new) CHANGELOG.md
   git add CHANGELOG.md || true
   git commit --allow-empty \
-    -m "ci(semantic-release): initialize CHANGELOG.md at ${CURRENT_BRANCH_SHA:-unknown}"
+    -m "ci(semantic-release): updated CHANGELOG.md at ${CURRENT_BRANCH_SHA:-unknown}"
 
 )
 
 
 # List all worktrees
 printf "\n\n"
-echo "Current Git worktrees:"
+logger INFO "Current Git worktrees:"
 git worktree list -v
 
 printf "\n\n"
-echo "[INFO] Pushing '$BRANCH' branch to remote '$REMOTE'"
+logger INFO "Pushing '$BRANCH' branch to remote '$REMOTE'"
 # Push the new or updated branch to the remote
 git push -u "$REMOTE" "$BRANCH"
 
-echo "[INFO] Updated the '$BRANCH' branch on remote '$REMOTE'."
+logger INFO "Updated the '$BRANCH' branch on remote '$REMOTE'."
