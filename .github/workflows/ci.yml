@@ -64,6 +64,8 @@ concurrency:
 jobs:
   continuous-integration:
     runs-on: ${{ inputs.action-runs-on }}
+    env: 
+      LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
     steps:
       - name: Setup | Checkout Repository at workflow sha
         uses: actions/checkout@v6.0.1
@@ -111,6 +113,8 @@ jobs:
           git remote -v
           
       - name: Get the latest CHANGELOG from the `log` branch or initialize it
+        env:
+          LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
         run: |
           bash ./.central-workflows/scripts/git/log-worktree.sh
 
@@ -160,7 +164,7 @@ jobs:
         run: |
           echo "## Logger Output" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          cat $LOG_FILE >> $GITHUB_STEP_SUMMARY || echo "No log output available."
+          cat $LOG_FILE >> $GITHUB_STEP_SUMMARY || echo "No log output available." >> $GITHUB_STEP_SUMMARY
           
       - name: Workflow Status
         run: |
