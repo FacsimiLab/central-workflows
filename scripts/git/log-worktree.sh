@@ -2,11 +2,16 @@
 set -euo pipefail
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
-cd "$REPO_ROOT"
+
 
 WT_PATH=worktree/log
 BRANCH=log
 REMOTE=origin
+
+cd "$REPO_ROOT"
+
+. ./scripts/logger/bash-logger.sh
+create_log_file "$LOG_FILE"
 
 mkdir -p "$WT_PATH"
 

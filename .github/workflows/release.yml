@@ -60,6 +60,8 @@ jobs:
 
   continuous-delivery:
     runs-on: ${{ inputs.action-runs-on }}
+    env:
+      LOG_FILE: .github/log/github-action.log
     steps:
       - name: Checkout Repository at workflow SHA
         uses: actions/checkout@v6.0.1
@@ -99,6 +101,8 @@ jobs:
           git remote -v
 
       - name: Get the latest CHANGELOG from the `log` branch or initialize it
+        env:
+          LOG_FILE: .github/log/github-action.log
         run: |
           bash ./.central-workflows/scripts/git/log-worktree.sh
 
@@ -131,9 +135,9 @@ jobs:
         id: psr-root-options
         run: |
           if [ -n "${{ steps.psr-config-file.outputs.path }}" ]; then
-            echo "root_options='-v -c ${{ steps.psr-config-file.outputs.path }}'" >> $GITHUB_OUTPUT
+            echo "root_options='-v -c ${{ steps.psr-config-file.outputs.path }}'" >> $GITHUB_STEP_SUMMARY
           else
-            echo "root_options='-v'" >> $GITHUB_OUTPUT
+            echo "root_options='-v'" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Display PSR root options

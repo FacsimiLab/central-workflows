@@ -118,9 +118,9 @@ jobs:
         id: psr-root-options
         run: |
           if [ -n "${{ steps.psr-config-file.outputs.path }}" ]; then
-            echo "root_options='-v -c ${{ steps.psr-config-file.outputs.path }}'" >> $GITHUB_OUTPUT
+            echo "root_options='-v -c ${{ steps.psr-config-file.outputs.path }}'" >> $GITHUB_STEP_SUMMARY
           else
-            echo "root_options='-v'" >> $GITHUB_OUTPUT
+            echo "root_options='-v'" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Display PSR root options
