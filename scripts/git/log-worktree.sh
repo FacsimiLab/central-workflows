@@ -7,7 +7,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 WT_PATH=worktree/log
 BRANCH=log
 REMOTE=origin
-
+LOG_FILE=${LOG_FILE:-"$REPO_ROOT/.github/log/log-worktree.log"}
 cd "$REPO_ROOT"
 
 . ./scripts/logger/bash-logger.sh
