@@ -1,0 +1,23 @@
+# Local operations
+[init]
+	defaultBranch = main
+
+[branch]
+	autoSetupMerge = always
+
+[merge]
+	verifySignatures = false
+
+# Remote operations
+[checkout]
+	defaultRemote=origin
+
+[pull]
+	rebase = false
+
+[fetch]
+	prune = true
+
+[push]
+	autoSetupRemote = true
+	default = current
