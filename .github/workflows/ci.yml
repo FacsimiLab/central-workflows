@@ -114,6 +114,19 @@ jobs:
             echo "No config file found"
           fi
 
+      # - name: Define PSR root options
+      #   id: psr-root-options
+      #   run: |
+      #     if [ -n "${{ steps.psr-config-file.outputs.path }}" ]; then
+      #       echo "root_options='-v -c ${{ steps.psr-config-file.outputs.path }}'" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "root_options='-v'" >> $GITHUB_OUTPUT
+      #     fi
+
+      # - name: Display PSR root options
+      #   run: |
+      #     echo "Using PSR root options: ${{ steps.psr-root-options.outputs.root_options }}"
+
       - name: Python Semantic Release
         id: psr-ci
         uses: pranavmishra90/semvar-docker@v0.2.0
@@ -128,7 +141,7 @@ jobs:
           tag: ${{ inputs.tag }}
           vcs_release: ${{ inputs.vcs_release }}
           push: ${{ inputs.push }}
-          root_options: -v -c ${{ steps.psr-config-file.outputs.path || '-v' }}
+          root_options: -v -c ${{ steps.psr-config-file.outputs.path || -v }}
           
       - name: Workflow Status
         run: |
