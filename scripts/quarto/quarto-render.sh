@@ -34,7 +34,7 @@ for dir in "_site" "_manuscript" "_freeze" ".quarto" ".venv"; do
 done
 
 # Setup the python virtual environment (if the helper exists)
-SETUP_SCRIPT=".central-workflows/.github/workflows/scripts/setup-venv.sh"
+SETUP_SCRIPT=".central-workflows/scripts/python/setup-venv.sh"
 if [ -f "$SETUP_SCRIPT" ]; then
   bash "$SETUP_SCRIPT"
 else
