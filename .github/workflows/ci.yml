@@ -1,0 +1,35 @@
+name: Continuous Integration
+on:
+  push:
+    branches:
+      - main
+      - rc
+  pull_request:
+    branches:
+      - rc
+    types:
+      - opened
+      - assigned
+      - labeled
+      - ready_for_review
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: read
+  actions: read
+
+jobs:
+  ci:
+    uses: facsimilab/central-workflows/ci/ci.yml@main
+    with:
+      ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      build: "false"
+      changelog: "true"
+      commit: "false"
+      tag: "false"
+      vcs_release: "false"
+      push: "false"
+    secrets:
+      FACSIMILAB_BOT_SSHKEY: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
+      FACSIMILAB_BOT_SSH_PUBKEY: ${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}
