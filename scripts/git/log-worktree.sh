@@ -12,7 +12,7 @@ cd "$REPO_ROOT"
 
 . ./scripts/logger/bash-logger.sh
 create_log_file "$LOG_FILE"
-echo "*.log" >> .github/log/.gitignore
+echo "*.log" > .github/log/.gitignore
 
 mkdir -p "$WT_PATH"
 
