@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   ci:
-    uses: facsimilab/central-workflows/.github/workflows/ci/ci.yml@main
+    uses: facsimilab/central-workflows/.github/workflows/ci.yml@main
     with:
       ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
       build: "false"
