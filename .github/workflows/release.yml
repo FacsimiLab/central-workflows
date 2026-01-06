@@ -100,15 +100,7 @@ jobs:
 
       - name: Get the latest CHANGELOG from the `log` branch or initialize it
         run: |
-          if git ls-remote --exit-code --heads origin log; then
-            echo "log branch found — fetching CHANGELOG.md"
-            git fetch origin log
-            git checkout origin/log -- CHANGELOG.md
-          else
-            echo "log branch not found — creating empty CHANGELOG.md if it doesn't exist"
-            touch CHANGELOG.md
-            git add -A CHANGELOG.md || true
-          fi
+          bash ./.central-workflows/scripts/git/log-worktree.sh
 
       - name: List and delete pre-release tags
         id: list_tags
