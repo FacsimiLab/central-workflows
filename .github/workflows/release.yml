@@ -118,18 +118,18 @@ jobs:
           echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'."
           echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'." >> $GITHUB_STEP_SUMMARY
 
-      - name: Check for PSR config file
-        id: psr-config-file
-        run: | 
-          if [ -f pyproject.toml ]; then
-            echo "path=pyproject.toml" >> $GITHUB_OUTPUT
-            echo "Found pyproject.toml"
-          elif [ -f releaserc.toml ]; then
-            echo "path=releaserc.toml" >> $GITHUB_OUTPUT
-            echo "Found releaserc.toml"
+      - name: Define PSR root options
+        id: psr-root-options
+        run: |
+          if [ -n "${{ steps.psr-config-file.outputs.path }}" ]; then
+            echo "root_options='-v -c ${{ steps.psr-config-file.outputs.path }}'" >> $GITHUB_OUTPUT
           else
-            echo "No config file found"
+            echo "root_options='-v'" >> $GITHUB_OUTPUT
           fi
+
+      - name: Display PSR root options
+        run: |
+          echo "Using PSR root options: ${{ steps.psr-root-options.outputs.root_options }}"
 
       - name: Python Semantic Release
         id: psr-ci
@@ -145,7 +145,7 @@ jobs:
           tag: ${{ inputs.tag }}
           vcs_release: ${{ inputs.vcs_release }}
           push: ${{ inputs.push }}
-          root_options: -v -c ${{ steps.psr-config-file.outputs.path || '-v' }}
+          root_options: ${{ steps.psr-root-options.outputs.root_options }}
 
       - name: Workflow Status
         run: |

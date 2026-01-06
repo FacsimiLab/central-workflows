@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   cd:
-    uses: facsimilab/central-workflows/.github/workflows/cd.yml@main
+    uses: facsimilab/central-workflows/.github/workflows/release.yml@main
     with:
       ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
     secrets:
