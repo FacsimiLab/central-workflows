@@ -1,35 +1,142 @@
-name: Continuous Integration
+name: Continuous Improvement
+
 on:
-  push:
-    branches:
-      - main
-      - rc
-  pull_request:
-    branches:
-      - rc
-    types:
-      - opened
-      - assigned
-      - labeled
-      - ready_for_review
+  workflow_call:
+    inputs:
+      action-runs-on:
+        description: 'The type of runner to run the job on'
+        required: false
+        default: 'ubuntu-latest'
+        type: string
+      ref:
+        description: 'Git ref to checkout'
+        required: false
+        type: string
+        default: 'main'
+      build:
+        required: false
+        type: string
+        default: 'false'
+      commit:
+        required: false
+        type: string
+        default: 'false'
+      git_committer_email:
+        required: false
+        type: string
+        default: '195262995+facsimilab-bot@users.noreply.github.com'
+      tag:
+        required: false
+        type: string
+        default: 'false'
+      changelog:
+        required: false
+        type: string
+        default: 'true'
+      vcs_release:
+        required: false
+        type: string
+        default: 'false'
+      push:
+        required: false
+        type: string
+        default: 'false'
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: false
+      SSH_PUBLIC_KEY:
+        required: false
 
 permissions:
   id-token: write
   contents: write
   pull-requests: read
-  actions: read
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
 
 jobs:
-  ci:
-    uses: facsimilab/central-workflows/.github/workflows/ci/ci.yml@main
-    with:
-      ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-      build: "false"
-      changelog: "true"
-      commit: "false"
-      tag: "false"
-      vcs_release: "false"
-      push: "false"
-    secrets:
-      FACSIMILAB_BOT_SSHKEY: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
-      FACSIMILAB_BOT_SSH_PUBKEY: ${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}
+  continuous-integration:
+    runs-on: ${{ inputs.action-runs-on }}
+    steps:
+      - name: Setup | Checkout Repository at workflow sha
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.ref }}
+
+      - name: Setup | Force correct release branch on workflow SHA
+        run: git checkout -B ${{ inputs.ref }}
+
+      - name: Checkout central workflows
+        uses: actions/checkout@v6.0.1
+        with:
+          repository: FacsimiLab/central-workflows
+          path: .central-workflows
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Convert HTTPS remote to SSH
+        run: |
+          HTTPS_URL=$(git remote get-url origin)
+          if [[ "$HTTPS_URL" == https://github.com/* ]]; then
+            SSH_URL=$(echo "$HTTPS_URL" | sed -E 's#https://github.com/#git@github.com:#')
+            git remote set-url origin "$SSH_URL"
+          fi
+          git remote -v
+          
+      - name: Get the latest CHANGELOG from the `log` branch or initialize it
+        run: |
+          if git ls-remote --exit-code --heads origin log; then
+            echo "log branch found — fetching CHANGELOG.md"
+            git fetch origin log
+            git checkout origin/log -- CHANGELOG.md
+          else
+            echo "log branch not found — creating empty CHANGELOG.md"
+            touch CHANGELOG.md
+            git add -A CHANGELOG.md || true
+          fi
+
+      - name: Check for PSR config file
+        id: psr-config-file
+        run: | 
+          if [ -f pyproject.toml ]; then
+            echo "path=pyproject.toml" >> $GITHUB_OUTPUT
+            echo "Found pyproject.toml"
+          elif [ -f releaserc.toml ]; then
+            echo "path=releaserc.toml" >> $GITHUB_OUTPUT
+            echo "Found releaserc.toml"
+          else
+            echo "No config file found"
+          fi
+
+      - name: Python Semantic Release
+        id: psr-ci
+        uses: pranavmishra90/semvar-docker@v0.2.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_email: ${{ inputs.git_committer_email }}
+          ssh_private_signing_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_public_signing_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          build: ${{ inputs.build }}
+          changelog: ${{ inputs.changelog }}
+          commit: ${{ inputs.commit }}
+          tag: ${{ inputs.tag }}
+          vcs_release: ${{ inputs.vcs_release }}
+          push: ${{ inputs.push }}
+          root_options: -v -c ${{ steps.psr-config-file.outputs.path || '-v' }}
+          
+      - name: Workflow Status
+        run: |
+          echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          echo "Version: ${{ steps.psr-ci.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          printf "Tags: \n$(git tag -l)" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          echo "Released: ${{ steps.psr-ci.outputs.released }}" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY

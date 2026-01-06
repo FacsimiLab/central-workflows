@@ -1,27 +1,210 @@
 name: Continuous Delivery
 
 on:
-  push:
-    branches:
-      - release
-  pull_request:
-    branches:
-      - release
-    types:
-      - opened
-      - ready_for_review
+  workflow_call:
+    inputs:
+      action-runs-on:
+        description: 'The type of runner to run the job on'
+        required: false
+        default: 'ubuntu-latest'
+        type: string
+      ref:
+        description: 'Git ref to checkout (branch or SHA)'
+        required: true
+        default: 'release'
+        type: string
+      build:
+        required: false
+        type: string
+        default: 'false'
+      git_committer_email:
+        required: false
+        type: string
+        default: '195262995+facsimilab-bot@users.noreply.github.com'
+      commit:
+        required: false
+        type: string
+        default: 'true'
+      tag:
+        required: false
+        type: string
+        default: 'true'
+      changelog:
+        required: false
+        type: string
+        default: 'true'
+      vcs_release:
+        required: false
+        type: string
+        default: 'true'
+      push:
+        required: false
+        type: string
+        default: 'true'
+    secrets:
+      SSH_PRIVATE_KEY:
+        required: false
+      SSH_PUBLIC_KEY:
+        required: false
 
 permissions:
   id-token: write
   contents: write
   pull-requests: read
-  actions: read
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
 
 jobs:
-  cd:
-    uses: facsimilab/central-workflows/.github/workflows/cd/cd.yml@main
-    with:
-      ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
-    secrets:
-      FACSIMILAB_BOT_SSHKEY: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
-      FACSIMILAB_BOT_SSH_PUBKEY: ${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}
+
+  continuous-delivery:
+    runs-on: ${{ inputs.action-runs-on }}
+    steps:
+      - name: Checkout Repository at workflow SHA
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.ref }}
+
+      - name: Force correct release branch on workflow SHA
+        run: git checkout -B ${{ inputs.ref }}
+
+      - name: Checkout central workflows
+        uses: actions/checkout@v6.0.1
+        with:
+          repository: FacsimiLab/central-workflows
+          path: .central-workflows
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Get the latest CHANGELOG from the `log` branch or initialize it
+        run: |
+          if git ls-remote --exit-code --heads origin log; then
+            echo "log branch found — fetching CHANGELOG.md"
+            git fetch origin log
+            git checkout origin/log -- CHANGELOG.md
+          else
+            echo "log branch not found — creating empty CHANGELOG.md"
+            touch CHANGELOG.md
+            git add -A CHANGELOG.md || true
+          fi
+
+      - name: List and delete pre-release tags
+        id: list_tags
+        run: |
+          echo "Searching for tags containing 'rc', 'main', 'beta', or 'alpha'."
+          TAGS=$(git tag -l "*-rc*" "*-main*" "*-beta*" "*-alpha*")
+          echo "Found tags:"
+          echo "$TAGS"
+          if [ -z "$TAGS" ]; then
+            echo "No pre-release tags found."
+            echo "tags_to_delete=" > tags.log
+          else
+            echo "tags_to_delete=$TAGS" > tags.log
+
+            echo "Deleting local tags..."
+            echo $TAGS | xargs -n 1 git tag -d
+
+            echo "Deleting remote tags..."
+            for TAG in $TAGS; do
+              git push origin --delete $TAG || echo "Failed to delete $TAG from remote."
+            done
+          fi
+
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'."
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'." >> $GITHUB_STEP_SUMMARY
+
+      - name: Check for PSR config file
+        id: psr-config-file
+        run: | 
+          if [ -f pyproject.toml ]; then
+            echo "path=pyproject.toml" >> $GITHUB_OUTPUT
+            echo "Found pyproject.toml"
+          elif [ -f releaserc.toml ]; then
+            echo "path=releaserc.toml" >> $GITHUB_OUTPUT
+            echo "Found releaserc.toml"
+          else
+            echo "No config file found"
+          fi
+
+      - name: Python Semantic Release
+        id: psr-ci
+        uses: pranavmishra90/semvar-docker@v0.2.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_email: ${{ inputs.git_committer_email }}
+          ssh_private_signing_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh_public_signing_key: ${{ secrets.SSH_PUBLIC_KEY }}
+          build: ${{ inputs.build }}
+          changelog: ${{ inputs.changelog }}
+          commit: ${{ inputs.commit }}
+          tag: ${{ inputs.tag }}
+          vcs_release: ${{ inputs.vcs_release }}
+          push: ${{ inputs.push }}
+          root_options: -v -c ${{ steps.psr-config-file.outputs.path || '-v' }}
+
+      - name: Workflow Status
+        run: |
+          echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          echo "Version: ${{ steps.semver.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          printf "Tags: \n$(git tag -l)" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          echo "Released: ${{ steps.semver.outputs.released }}" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
+          cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY
+
+  update-main:
+    runs-on: ${{ inputs.action-runs-on }}
+    if: startsWith(github.ref_name, 'release')
+    needs: continuous-delivery
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository at workflow SHA
+        uses: actions/checkout@v6.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.ref }}
+
+      - name: Force correct release branch on workflow SHA
+        run: git checkout -B ${{ inputs.ref }}
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Convert HTTPS remote to SSH
+        run: |
+          HTTPS_URL=$(git remote get-url origin)
+          if [[ "$HTTPS_URL" == https://github.com/* ]]; then
+            SSH_URL=$(echo "$HTTPS_URL" | sed -E 's#https://github.com/#git@github.com:#')
+            git remote set-url origin "$SSH_URL"
+          fi
+          git remote -v
+
+      - name: Update main branch
+        run: |
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          if [ "$BRANCH" != "release" ]; then
+            echo "Not on release branch ($BRANCH), skipping merge to main."
+            exit 0
+          fi
+
+          # Ensure main is up to date
+          git fetch origin main:main
+
+          git checkout main || git checkout -b main origin/main
+
+          if git merge release -v -m "ci: merge release into main"; then
+            git push origin main
+            echo "Successfully merged 'release' into 'main' and pushed." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Merge failed — possible conflicts. Manual resolution required." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
