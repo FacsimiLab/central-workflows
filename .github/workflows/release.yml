@@ -89,7 +89,7 @@ jobs:
             git fetch origin log
             git checkout origin/log -- CHANGELOG.md
           else
-            echo "log branch not found — creating empty CHANGELOG.md"
+            echo "log branch not found — creating empty CHANGELOG.md if it doesn't exist"
             touch CHANGELOG.md
             git add -A CHANGELOG.md || true
           fi
