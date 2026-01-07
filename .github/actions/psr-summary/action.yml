@@ -1,0 +1,51 @@
+name: "PSR Summary"
+description: "Generates a markdown summary from the Python Semantic Release action, suitable for GitHub Actions workflow summaries."
+
+
+inputs:
+  psr-version:
+    description: "Version output from the PSR action"
+    required: false
+  psr-released:
+    description: "Released output from the PSR action"
+    required: false
+  changelog-file:
+    description: "Path to the changelog file"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - id: generate-summary
+      shell: bash
+      run: |
+        PSR_SUMMARY_FILE_PATH="./github/log/psr_summary.md"
+        echo "psr-summary-file-path=$PSR_SUMMARY_FILE_PATH" >> "$GITHUB_OUTPUT"
+        {
+          echo "## Python Semantic Release - GitHub Action"
+          echo ""
+          if [ -n "${{ inputs.psr-version }}" ]; then
+            echo "Version: ${{ inputs.psr-version }}"
+          else
+            echo "Version: Not available"
+          fi
+          if [ -n "${{ inputs.psr-released }}" ]; then
+            echo "Released: ${{ inputs.psr-released }}"
+          else
+            echo "Released: Not available"
+          fi
+          echo ""
+          if [ -n "${{ inputs.changelog-file }}" ] && [ -f "${{ inputs.changelog-file }}" ]; then
+            echo "-----"
+            echo ""
+            cat "${{ inputs.changelog-file }}"
+          else
+            echo "Changelog file not found or not provided."
+          fi
+        } > "$PSR_SUMMARY_FILE_PATH"
+
+
+outputs:
+  psr-summary-file-path:
+    description: "Path to the generated PSR summary file"
+    value: ${{ steps.generate-summary.outputs.psr-summary-file-path }}
