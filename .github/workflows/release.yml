@@ -1,4 +1,4 @@
-name: Continuous Delivery
+name: Release
 
 on:
   workflow_call:
@@ -177,53 +177,53 @@ jobs:
           echo ""  >> $GITHUB_STEP_SUMMARY
           cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY
 
-  update-main:
-    runs-on: ${{ inputs.action-runs-on }}
-    if: startsWith(github.ref_name, 'release')
-    needs: continuous-delivery
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout Repository at workflow SHA
-        uses: actions/checkout@v6.0.1
-        with:
-          fetch-depth: 0
-          ref: ${{ inputs.ref }}
+  # update-main:
+  #   runs-on: ${{ inputs.action-runs-on }}
+  #   if: startsWith(github.ref_name, 'release')
+  #   needs: continuous-delivery
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - name: Checkout Repository at workflow SHA
+  #       uses: actions/checkout@v6.0.1
+  #       with:
+  #         fetch-depth: 0
+  #         ref: ${{ inputs.ref }}
 
-      - name: Force correct release branch on workflow SHA
-        run: git checkout -B ${{ inputs.ref }}
+  #     - name: Force correct release branch on workflow SHA
+  #       run: git checkout -B ${{ inputs.ref }}
 
-      - name: Set up SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #     - name: Set up SSH agent
+  #       uses: webfactory/ssh-agent@v0.9.0
+  #       with:
+  #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Convert HTTPS remote to SSH
-        run: |
-          HTTPS_URL=$(git remote get-url origin)
-          if [[ "$HTTPS_URL" == https://github.com/* ]]; then
-            SSH_URL=$(echo "$HTTPS_URL" | sed -E 's#https://github.com/#git@github.com:#')
-            git remote set-url origin "$SSH_URL"
-          fi
-          git remote -v
+  #     - name: Convert HTTPS remote to SSH
+  #       run: |
+  #         HTTPS_URL=$(git remote get-url origin)
+  #         if [[ "$HTTPS_URL" == https://github.com/* ]]; then
+  #           SSH_URL=$(echo "$HTTPS_URL" | sed -E 's#https://github.com/#git@github.com:#')
+  #           git remote set-url origin "$SSH_URL"
+  #         fi
+  #         git remote -v
 
-      - name: Update main branch
-        run: |
-          BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          if [ "$BRANCH" != "release" ]; then
-            echo "Not on release branch ($BRANCH), skipping merge to main."
-            exit 0
-          fi
+  #     - name: Update main branch
+  #       run: |
+  #         BRANCH=$(git rev-parse --abbrev-ref HEAD)
+  #         if [ "$BRANCH" != "release" ]; then
+  #           echo "Not on release branch ($BRANCH), skipping merge to main."
+  #           exit 0
+  #         fi
 
-          # Ensure main is up to date
-          git fetch origin main:main
+  #         # Ensure main is up to date
+  #         git fetch origin main:main
 
-          git checkout main || git checkout -b main origin/main
+  #         git checkout main || git checkout -b main origin/main
 
-          if git merge release -v -m "ci: merge release into main"; then
-            git push origin main
-            echo "Successfully merged 'release' into 'main' and pushed." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "Merge failed — possible conflicts. Manual resolution required." >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
+  #         if git merge release -v -m "ci: merge release into main"; then
+  #           git push origin main
+  #           echo "Successfully merged 'release' into 'main' and pushed." >> $GITHUB_STEP_SUMMARY
+  #         else
+  #           echo "Merge failed — possible conflicts. Manual resolution required." >> $GITHUB_STEP_SUMMARY
+  #           exit 1
+  #         fi
