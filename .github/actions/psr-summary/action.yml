@@ -16,11 +16,25 @@ inputs:
 runs:
   using: "composite"
   steps:
+
+    - id: validate-inputs
+      shell: bash
+      run: |
+        echo "Validating inputs..."
+        echo "PSR Version: '${{ inputs.psr-version }}'"
+        echo "PSR Released: '${{ inputs.psr-released }}'"
+        echo "Changelog File: '${{ inputs.changelog-file }}'"
+        echo "Input validation completed."
+        echo ""
+
     - id: generate-summary
       shell: bash
       run: |
         PSR_SUMMARY_FILE_PATH="./github/log/psr_summary.md"
+        touch "$PSR_SUMMARY_FILE_PATH"
         echo "psr-summary-file-path=$PSR_SUMMARY_FILE_PATH" >> "$GITHUB_OUTPUT"
+
+
         {
           echo "## Python Semantic Release - GitHub Action"
           echo ""
