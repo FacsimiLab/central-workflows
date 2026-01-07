@@ -172,7 +172,7 @@ jobs:
 
       - name: Python Semantic Release
         id: psr-ci
-        uses: pranavmishra90/semvar-docker@v0.2.0
+        uses: pranavmishra90/semvar-docker@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           git_committer_email: ${{ inputs.git_config_email }}
