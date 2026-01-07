@@ -1,5 +1,5 @@
 name: "PSR Summary"
-description: "Generates a markdown summary from the Python Semantic Release action, suitable for GitHub Actions workflow summaries."
+description: "NOT WORKING, cannot create a local file. Generates a markdown summary from the Python Semantic Release action, suitable for GitHub Actions workflow summaries."
 
 
 inputs:
@@ -30,13 +30,8 @@ runs:
     - id: create-summary-file
       shell: bash
       run: |
-        echo "Current directory: $(pwd)"
-        mkdir -p .github/log
-        ls -laR .github
-        echo ""
-        PSR_SUMMARY_FILE_PATH=".github/log/psr_summary.md"
+        PSR_SUMMARY_FILE_PATH="/tmp/psr_summary.md"
         echo "Creating summary file at: $PSR_SUMMARY_FILE_PATH"
-        touch "$PSR_SUMMARY_FILE_PATH"
         echo "psr-summary-file-path=$PSR_SUMMARY_FILE_PATH" >> "$GITHUB_OUTPUT"
 
     - id: generate-summary
@@ -64,7 +59,7 @@ runs:
           else
             echo "Changelog file not found or not provided."
           fi
-        } > "$PSR_SUMMARY_FILE_PATH"
+        } > PSR_SUMMARY_FILE_PATH
 
     - id: validate-summary
       shell: bash
@@ -80,6 +75,6 @@ runs:
 
 
 outputs:
-  psr-summary-file-path:
-    description: "Path to the generated PSR summary file"
-    value: ${{ steps.generate-summary.outputs.psr-summary-file-path }}
+    psr-summary-file-path:
+      description: "Markdown summary"
+      value: ${{ steps.generate-summary.outputs.psr-summary-file-path }}
