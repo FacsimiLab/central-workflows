@@ -1,4 +1,4 @@
-name: Continuous Improvement
+name: Continuous Integration
 
 on:
   workflow_call:
@@ -9,7 +9,7 @@ on:
         default: 'ubuntu-latest'
         type: string
       ref:
-        description: 'Git ref to checkout'
+        description: 'Git ref to checkout (branch or SHA)'
         required: false
         type: string
         default: 'main'
@@ -62,18 +62,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   continuous-integration:
     runs-on: ${{ inputs.action-runs-on }}
     env: 
       LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
     steps:
-      - name: Setup | Checkout Repository at workflow sha
+      - name: Checkout Repository at workflow SHA
         uses: actions/checkout@v6.0.1
         with:
           fetch-depth: 0
           ref: ${{ inputs.ref }}
 
-      - name: Setup | Force correct release branch on workflow SHA
+      - name: Force correct release branch on workflow SHA
         run: git checkout -B ${{ inputs.ref }}
 
       - name: Checkout central workflows
@@ -111,7 +112,7 @@ jobs:
             git remote set-url origin "$SSH_URL"
           fi
           git remote -v
-          
+
       - name: Get the latest CHANGELOG from the `log` branch or initialize it
         env:
           LOG_FILE: ${{ github.workspace }}/.github/log/ci.log

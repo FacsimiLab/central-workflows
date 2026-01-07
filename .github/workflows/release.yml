@@ -10,21 +10,26 @@ on:
         type: string
       ref:
         description: 'Git ref to checkout (branch or SHA)'
-        required: true
-        default: 'release'
+        required: false
         type: string
+        default: 'release'
       build:
         required: false
         type: string
         default: 'false'
-      git_committer_email:
-        required: false
-        type: string
-        default: '195262995+facsimilab-bot@users.noreply.github.com'
       commit:
         required: false
         type: string
         default: 'true'
+      git_config_user:
+        required: false
+        type: string
+        description: 'User name to use for git commits'
+        default: 'FacsimiLab Bot'
+      git_config_email:
+        required: false
+        type: string
+        default: '195262995+facsimilab-bot@users.noreply.github.com'
       tag:
         required: false
         type: string
@@ -58,10 +63,10 @@ concurrency:
 
 jobs:
 
-  continuous-delivery:
+  release:
     runs-on: ${{ inputs.action-runs-on }}
-    env:
-      LOG_FILE: .github/log/github-action.log
+    env: 
+      LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
     steps:
       - name: Checkout Repository at workflow SHA
         uses: actions/checkout@v6.0.1
@@ -90,6 +95,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Setup Git Config
+        run: |
+          git config --global user.name "${{ inputs.git_config_user }}"
+          git config --global user.email "${{ inputs.git_config_email }}"
+
+          git config include.path "${{ github.workspace }}/.central-workflows/scripts/git/addon-git-config.toml"
+
+
       - name: Convert HTTPS remote to SSH
         if: ${{ steps.ssh_key_present.outputs.present == 'true' }}
         run: |
@@ -102,7 +115,7 @@ jobs:
 
       - name: Get the latest CHANGELOG from the `log` branch or initialize it
         env:
-          LOG_FILE: .github/log/github-action.log
+          LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
         run: |
           bash ./.central-workflows/scripts/git/log-worktree.sh
 
@@ -131,6 +144,19 @@ jobs:
           echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'."
           echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'." >> $GITHUB_STEP_SUMMARY
 
+      - name: Check for PSR config file
+        id: psr-config-file
+        run: | 
+          if [ -f pyproject.toml ]; then
+            echo "path=pyproject.toml" >> $GITHUB_OUTPUT
+            echo "Found pyproject.toml"
+          elif [ -f releaserc.toml ]; then
+            echo "path=releaserc.toml" >> $GITHUB_OUTPUT
+            echo "Found releaserc.toml"
+          else
+            echo "No config file found"
+          fi
+
       - name: Define PSR root options
         id: psr-root-options
         run: |
@@ -149,7 +175,7 @@ jobs:
         uses: pranavmishra90/semvar-docker@v0.2.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          git_committer_email: ${{ inputs.git_committer_email }}
+          git_committer_email: ${{ inputs.git_config_email }}
           ssh_private_signing_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ssh_public_signing_key: ${{ secrets.SSH_PUBLIC_KEY }}
           build: ${{ inputs.build }}
@@ -164,16 +190,16 @@ jobs:
         run: |
           echo "## Logger Output" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          cat $LOG_FILE >> $GITHUB_STEP_SUMMARY || echo "No log output available."
-
+          cat $LOG_FILE >> $GITHUB_STEP_SUMMARY || echo "No log output available." >> $GITHUB_STEP_SUMMARY
+          
       - name: Workflow Status
         run: |
           echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
-          echo "Version: ${{ steps.semver.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "Version: ${{ steps.psr-ci.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           printf "Tags: \n$(git tag -l)" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
-          echo "Released: ${{ steps.semver.outputs.released }}" >> $GITHUB_STEP_SUMMARY
+          echo "Released: ${{ steps.psr-ci.outputs.released }}" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
           cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY
 
