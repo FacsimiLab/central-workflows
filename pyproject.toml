@@ -50,7 +50,7 @@ match = "main"
 prerelease = false
 
 [tool.semantic_release.branches.develop]
-match = "develop"
+match = "develop|dev"
 prerelease = true
 
 [tool.semantic_release.changelog.default_templates]
