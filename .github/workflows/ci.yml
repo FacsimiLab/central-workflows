@@ -85,7 +85,7 @@ jobs:
 
       - name: Detect SSH key
         id: ssh_key_present
-        uses: ./centralized-workflows/.github/actions/secret-present
+        uses: ./.centralized-workflows/.github/actions/secret-present
         with:
           value: ${{ secrets.SSH_PRIVATE_KEY || '' }}
 
