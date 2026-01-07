@@ -45,6 +45,10 @@ minor_tags = ["feat", "docs"]
 patch_tags = ["fix", "perf"]
 
 
+[tool.semantic_release.branches.release]
+match = "release|release*"
+prerelease = false
+
 [tool.semantic_release.branches.main]
 match = "main"
 prerelease = false
@@ -52,6 +56,13 @@ prerelease = false
 [tool.semantic_release.branches.develop]
 match = "develop|dev"
 prerelease = true
+prerelease_token = "beta"
+
+[tool.semantic_release.branches.featfix]
+match = "feat/*|fix/*"
+
+[tool.semantic_release.branches.docs]
+match = "docs/*"
 
 [tool.semantic_release.changelog.default_templates]
 changelog_file = "CHANGELOG.md"
