@@ -1,14 +1,16 @@
-name: Self-CD
-
+name: Demo-CI
 on:
   push:
     branches:
-      - release
+      - main
+      - rc
   pull_request:
     branches:
-      - release
+      - rc
     types:
       - opened
+      - assigned
+      - labeled
       - ready_for_review
 
 permissions:
@@ -18,10 +20,16 @@ permissions:
   actions: read
 
 jobs:
-  cd:
-    uses: facsimilab/central-workflows/.github/workflows/release.yml@main
+  ci:
+    uses: facsimilab/central-workflows/.github/workflows/ci.yml@main
     with:
       ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      build: "false"
+      changelog: "true"
+      commit: "false"
+      tag: "false"
+      vcs_release: "false"
+      push: "false"
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
       SSH_PUBLIC_KEY: ${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}
