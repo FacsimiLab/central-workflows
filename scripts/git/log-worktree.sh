@@ -82,6 +82,3 @@ logger INFO "Pushing '$BRANCH' branch to remote '$REMOTE'"
 git push -u "$REMOTE" "$BRANCH"
 
 logger INFO "Updated the '$BRANCH' branch on remote '$REMOTE'."
-
-cd "$REPO_ROOT"
-logger INFO "Returned to repository root. Current directory is: $(pwd)"
