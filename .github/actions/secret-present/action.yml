@@ -22,3 +22,4 @@ inputs:
 outputs:
   present:
     description: "true if the value is non-empty, false otherwise"
+    value: ${{ steps.check.outputs.present }}
