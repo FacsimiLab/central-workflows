@@ -91,7 +91,7 @@ jobs:
 
       - name: Set up SSH agent
         if: ${{ steps.ssh_key_present.outputs.present == 'true' }}
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -221,7 +221,7 @@ jobs:
   #       run: git checkout -B ${{ inputs.ref }}
 
   #     - name: Set up SSH agent
-  #       uses: webfactory/ssh-agent@v0.9.0
+  #       uses: webfactory/ssh-agent@v0.9.1
   #       with:
   #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
