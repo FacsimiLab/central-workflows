@@ -27,6 +27,12 @@
 - Convert from HTTPS to SSH git remote url
   ([`8a99d1d`](https://github.com/FacsimiLab/central-workflows/commit/8a99d1d52e9deb0e3d0a66b15995cc5373502274))
 
+- Correct path
+  ([`e261092`](https://github.com/FacsimiLab/central-workflows/commit/e261092704491ac504078c04c16ceec1c37d11d8))
+
+- Correct path for psr summary
+  ([`30d6439`](https://github.com/FacsimiLab/central-workflows/commit/30d6439535a1f0d27854408659a54176a741eb8f))
+
 - Force push
   ([`b2f65a4`](https://github.com/FacsimiLab/central-workflows/commit/b2f65a454013cffff3ba4f940ab484df994ddbe8))
 
@@ -42,9 +48,15 @@
 - Init a changelog if it doesn't exist
   ([`48eb668`](https://github.com/FacsimiLab/central-workflows/commit/48eb668b7657d2bbed13010999565bfc79f2d43d))
 
+- LOG_FILE env variable
+  ([`a4e7965`](https://github.com/FacsimiLab/central-workflows/commit/a4e7965b3ae58bc00a765c946c4d4849c016f883))
+
 - Move the reusable workflows inside of the github workflows folder, as it throws an error on GitHub
   otherwise
   ([`a04102a`](https://github.com/FacsimiLab/central-workflows/commit/a04102a47047cb64cd00b3cb30f49271dfe17be8))
+
+- Need to return to the repository root at the end of the script
+  ([`d9aae97`](https://github.com/FacsimiLab/central-workflows/commit/d9aae975f32aa445bc6edfdd5a1b879f574fec00))
 
 - Only attempt a merge to main from the release branch
   ([`bb3f1e8`](https://github.com/FacsimiLab/central-workflows/commit/bb3f1e81e51d01e869917f5f66ef6afe1a60fcbc))
@@ -58,6 +70,9 @@
 - Paths to scripts
   ([`552249e`](https://github.com/FacsimiLab/central-workflows/commit/552249e1c9bb96f458cb84f9c86f8be50bfc5a8e))
 
+- Provide relative path without workspace path substitution
+  ([`1f1f04b`](https://github.com/FacsimiLab/central-workflows/commit/1f1f04bf7c2503ba26f649284f5fe70b6def3295))
+
 - Quote
   ([`438dff4`](https://github.com/FacsimiLab/central-workflows/commit/438dff4a247c81634d550e9c25620a60d17d2a11))
 
@@ -70,8 +85,17 @@
 - Reference to correct ci/cd workflow files
   ([`13520a8`](https://github.com/FacsimiLab/central-workflows/commit/13520a83a2f06d85b02b875bfe2b6723af1a2b2f))
 
+- Release.yml is updated with the code from ci.yml
+  ([`efbadbf`](https://github.com/FacsimiLab/central-workflows/commit/efbadbf33a0e6f42f6cc3870d215b620f5b38da1))
+
 - Remove commitlint
   ([`42dd4b2`](https://github.com/FacsimiLab/central-workflows/commit/42dd4b2a76465557c17ddbebea22fdee0288891c))
+
+- Remove log gitignore file and add global gitignore; remove log file creation from script
+  ([`7d48426`](https://github.com/FacsimiLab/central-workflows/commit/7d48426368c08b09d7abb8384924ab918c3a6ebd))
+
+- Remove non-functional psr-summary action
+  ([`edc6359`](https://github.com/FacsimiLab/central-workflows/commit/edc6359ec4bdd8e960957f8aa3bfbacf7d17f22a))
 
 - Remove pages permission
   ([`82ce732`](https://github.com/FacsimiLab/central-workflows/commit/82ce73245bece82670756198b68a133d30181fa2))
@@ -79,8 +103,14 @@
 - Remove quotes from the root_options input in reusable workflows
   ([`6a018ed`](https://github.com/FacsimiLab/central-workflows/commit/6a018ed4d920f99d67eabeeeac015dd65e6fc5aa))
 
+- Remove the "update-main" job from release, as this should be moved into a separate workflow WIP
+  ([`0ad9df5`](https://github.com/FacsimiLab/central-workflows/commit/0ad9df57a6a304e1b3e108550c80db5de25095a6))
+
 - Remove workflow summary
   ([`2019368`](https://github.com/FacsimiLab/central-workflows/commit/2019368d50547eb220d6e62652fbf2abf76636b0))
+
+- Restore original workflow summary
+  ([`5985e21`](https://github.com/FacsimiLab/central-workflows/commit/5985e21a85638e674c4f8ec1ea7dc4200f3ad26d))
 
 - Script path
   ([`52f75d6`](https://github.com/FacsimiLab/central-workflows/commit/52f75d6fecad166bce50f3445dba4f28541cf776))
@@ -104,6 +134,9 @@
 - Ssh agent
   ([`ac893a5`](https://github.com/FacsimiLab/central-workflows/commit/ac893a5c6696df527159e20952efe88781716591))
 
+- Test using tmp directory
+  ([`d44380e`](https://github.com/FacsimiLab/central-workflows/commit/d44380e3d769da3677073d7c833cedde383c331d))
+
 - Update secret variable names and also bump actions/checkout to v5
   ([`7b4e985`](https://github.com/FacsimiLab/central-workflows/commit/7b4e985039997b3934ad5b9b020e9febc86a4af9))
 
@@ -112,6 +145,9 @@
 
 - Use actions checkout@v6.0.1
   ([`892dc9d`](https://github.com/FacsimiLab/central-workflows/commit/892dc9df1ca11c1068056a1912a5e8e0bda17c5e))
+
+- Use central-workflows action, not the locally downloaded one
+  ([`d319538`](https://github.com/FacsimiLab/central-workflows/commit/d319538fdbddb60c6a9521be41ecf527e2311e7e))
 
 - Use hypthens rather than underscores
   ([`e438f8a`](https://github.com/FacsimiLab/central-workflows/commit/e438f8afe5ed1414653e99d06f9dacb9f45ac553))
@@ -122,6 +158,18 @@
 - Use the SSH key validation pattern found in ci.yml
   ([`f46fe17`](https://github.com/FacsimiLab/central-workflows/commit/f46fe17159825f56b855c6d816afb049a89f12d5))
 
+- Validate the inputs before generating the summary
+  ([`7c81ac7`](https://github.com/FacsimiLab/central-workflows/commit/7c81ac70f3af1aadd52bd1f233fc7848c82c3fa5))
+
+- WIP check action directory
+  ([`62d444b`](https://github.com/FacsimiLab/central-workflows/commit/62d444b41b1fde37cc27b142c29d5be428185732))
+
+- WIP path to actions in centralized-workflows when copied down
+  ([`581b10e`](https://github.com/FacsimiLab/central-workflows/commit/581b10e30448826df7f5a27c7d1ed9eed11179b8))
+
+- WIP try another form of the path
+  ([`f6bf7c9`](https://github.com/FacsimiLab/central-workflows/commit/f6bf7c98d6b2694927cfc2eb65188509430437e8))
+
 - Workflow output and commit message improvements
   ([`a78755a`](https://github.com/FacsimiLab/central-workflows/commit/a78755a0e6e6ef6f73a92ebbace4a042d8773e05))
 
@@ -131,7 +179,15 @@
 - Workflows must be defined at the top level of the .github/workflows/ directory
   ([`796aa7d`](https://github.com/FacsimiLab/central-workflows/commit/796aa7d0a81a99086c46bcccfcf7bf502c693d56))
 
+### Build System
+
+- Add vscode extensions.json
+  ([`0345fcb`](https://github.com/FacsimiLab/central-workflows/commit/0345fcbd151cb45fe0882f442687dfd3e31259a9))
+
 ### Chores
+
+- Delete root changelog
+  ([`9ca7000`](https://github.com/FacsimiLab/central-workflows/commit/9ca7000ca7f77ac16ee1b1c491a33fefcb5a2204))
 
 - Move scripts respective subdirectories
   ([`6fa1e74`](https://github.com/FacsimiLab/central-workflows/commit/6fa1e74242815554d6ed235f501d0e9e7a643ca4))
@@ -141,7 +197,13 @@
   reference and as a test.
   ([`26167e4`](https://github.com/FacsimiLab/central-workflows/commit/26167e4587731345a4c262a0843162b4805a5bbc))
 
+- Rename self to demo
+  ([`78e23e4`](https://github.com/FacsimiLab/central-workflows/commit/78e23e46d015a0202792feba72035824179a74ab))
+
 ### Code Style
+
+- Slight cleanup on workflow summary
+  ([`eb83295`](https://github.com/FacsimiLab/central-workflows/commit/eb832959b6a230002ce283f376b7a48440e53fb4))
 
 - Specify nature of changelog creation
   ([`71d8d1f`](https://github.com/FacsimiLab/central-workflows/commit/71d8d1fcb9b7a2ed8ca6e704b20792aa575a3bce))
@@ -151,16 +213,40 @@
 
 ### Continuous Integration
 
-- Add changelog templates
-  ([`f2adb58`](https://github.com/FacsimiLab/central-workflows/commit/f2adb5818be27afc7abeb257b6774cd1d77e0497))
+- Add dependabot
+  ([`92da7d2`](https://github.com/FacsimiLab/central-workflows/commit/92da7d28faf2ee2acffb740f713a829e493978ad))
+
+- Add git config from inputs and an included path
+  ([`c4c780f`](https://github.com/FacsimiLab/central-workflows/commit/c4c780f27f880e61ab3a4a30c0c4359e3cc6b534))
+
+- Add LOG_FILE env variable and include log in summary
+  ([`182f0e1`](https://github.com/FacsimiLab/central-workflows/commit/182f0e1cba58ed4693269dc021b008779de4500c))
+
+- Add logger file to github step summary
+  ([`4448d19`](https://github.com/FacsimiLab/central-workflows/commit/4448d19a460762e297128ae2e06a24ba47c0d2e9))
+
+- Fix do not append but overwrite
+  ([`ca358f2`](https://github.com/FacsimiLab/central-workflows/commit/ca358f2c19efa863ddf90efd894a01c15170b701))
 
 - Remove token requirement
   ([`4d7cde9`](https://github.com/FacsimiLab/central-workflows/commit/4d7cde9aa6e2424b8a52d4154a2f0a3af20234b2))
 
+- Update to use the new log-worktree script
+  ([`baab084`](https://github.com/FacsimiLab/central-workflows/commit/baab0845efe8224f95331a9cc5a959365c772cdd))
+
 ### Documentation
 
+- Add demo ci/cd badges
+  ([`b6a03b9`](https://github.com/FacsimiLab/central-workflows/commit/b6a03b9276b083272ace8f86f2d86301e7ca931f))
+
+- Add note on changelog location
+  ([`c90be37`](https://github.com/FacsimiLab/central-workflows/commit/c90be37e2aa1df2b4fcaab33a48f389d478b36d6))
+
+- Add note on changelog location
+  ([`bf471cd`](https://github.com/FacsimiLab/central-workflows/commit/bf471cddb8f850a38c379a90ae74bfe5707e029a))
+
 - Init changelog
-  ([`9232869`](https://github.com/FacsimiLab/central-workflows/commit/92328693acb2df42666ab77d096f73c453a8ad3f))
+  ([`0721f3e`](https://github.com/FacsimiLab/central-workflows/commit/0721f3e20abd7f87498ea0313cb97ed81e3bebc2))
 
 - Update license
   ([`9636ac2`](https://github.com/FacsimiLab/central-workflows/commit/9636ac2f3bdeb11068664f476204fe6790d0a247))
@@ -179,6 +265,9 @@
 - Add additional inputs to the workflow
   ([`1af49c8`](https://github.com/FacsimiLab/central-workflows/commit/1af49c814ccb12962c72af68ce0d499256992b0a))
 
+- Add bash-logger.sh from pranavmishra90/dotfiles
+  ([`e55c30c`](https://github.com/FacsimiLab/central-workflows/commit/e55c30ca00cdc82ff6c71e9893400cdae30ad35b))
+
 - Add ci and cd workflows
   ([`a1af311`](https://github.com/FacsimiLab/central-workflows/commit/a1af31129138ac246c6547db421b6d8e8d7f04d5))
 
@@ -196,6 +285,13 @@
 
 - Add README for Central Workflows
   ([`67c1cd5`](https://github.com/FacsimiLab/central-workflows/commit/67c1cd5ffeddf07d988fdda7eb819023b71fc075))
+
+- Add script to create a git worktree for the log branch, init it if it doesnt exist, and copy the
+  change log there
+  ([`488da25`](https://github.com/FacsimiLab/central-workflows/commit/488da252d6cbfe7715864e4e0fcdf580d100e6d6))
+
+- Add the bash logger functionality
+  ([`2da4bef`](https://github.com/FacsimiLab/central-workflows/commit/2da4bef84a17644173d4702ff8adc839664185bb))
 
 - Add workflows for this repository as a test
   ([`364d83f`](https://github.com/FacsimiLab/central-workflows/commit/364d83fba6132482414d30bc8f340de26b0c92fc))
@@ -223,16 +319,25 @@
   gh-pages
   ([`a5db1e8`](https://github.com/FacsimiLab/central-workflows/commit/a5db1e8df7ff45f3823ef58b61eec75fea3c0300))
 
+- Reusable action to generate PSR summary in workflow
+  ([`bff9f27`](https://github.com/FacsimiLab/central-workflows/commit/bff9f27941af64c048063f0418ba16595f689d33))
+
 - Test for the presence of SSH keys before setting up SSH agent
   ([`966c368`](https://github.com/FacsimiLab/central-workflows/commit/966c3685ad8318284a1cd5ded8d438d80d305424))
 
 - Update ci/cd including quarto render with called scripts
   ([`bbc59e9`](https://github.com/FacsimiLab/central-workflows/commit/bbc59e919274f9d55bba73cee791e2704b28cb4a))
 
+- Validate the PSR summary action
+  ([`d23ecaa`](https://github.com/FacsimiLab/central-workflows/commit/d23ecaa8aefd6b7c612de5e32fc4dbea20fa2e99))
+
 - WIP test manual way of setting up ssh-agent with graceful handling of missing keys
   ([`5a283bd`](https://github.com/FacsimiLab/central-workflows/commit/5a283bd86c0fd4417fac0500fd82a03d263a704c))
 
 ### Refactoring
+
+- Add output to secret-present action
+  ([`738ded4`](https://github.com/FacsimiLab/central-workflows/commit/738ded45554db987e7c6eec716d63ef699d137a7))
 
 - Rename jobs
   ([`0072e17`](https://github.com/FacsimiLab/central-workflows/commit/0072e17ddab374c13112e1447aa928d6a2b0874a))
