@@ -48,7 +48,7 @@ jobs:
     runs-on: ${{ inputs.action-runs-on }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6.0.1
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           fetch-depth: 1
@@ -59,7 +59,7 @@ jobs:
           git checkout -B ${{ github.ref_name }}
 
       - name: Checkout central workflows
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6.0.1
         with:
           repository: FacsimiLab/central-workflows
           path: .central-workflows
@@ -102,7 +102,7 @@ jobs:
 
       - name: Render Quarto Project
         run: |
-          bash .central-workflows/.github/workflows/scripts/quarto-render.sh "${{ inputs.quarto-profile }}"
+          uv run render.py || bash .central-workflows/scripts/quarto/quarto-render.sh "${{ inputs.quarto-profile }}"
 
       - name: Configure Git
         run: |
@@ -111,7 +111,8 @@ jobs:
           git config --global user.signingkey "${{ secrets.SSH_PUBLIC_KEY }}"
           git config --list
 
-      - name: Commit rendered files
+      - name: Commit rendered files to branch gh-pages
         run: |
           git config user.name "FacsimiLab Bot"
-          bash .central-workflows/.github/workflows/scripts/static-site-git.sh
+          echo "Using ${{ inputs['quarto-output-dir'] }} for gh-pages"
+          bash .central-workflows/scripts/static-site/static-site-git.sh ${{ inputs['quarto-output-dir'] }}

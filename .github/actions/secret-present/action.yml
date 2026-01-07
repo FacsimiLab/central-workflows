@@ -1,0 +1,25 @@
+name: "Secret Present"
+description: "Checks whether an input secret is present (non-empty)"
+runs:
+  using: "composite"
+  steps:
+    - id: check
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        if [ -n "${{ inputs.value }}" ]; then
+          echo "present=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "present=false" >> "$GITHUB_OUTPUT"
+        fi
+
+inputs:
+  value:
+    description: "Secret or value to test for presence"
+    required: false
+
+outputs:
+  present:
+    description: "true if the value is non-empty, false otherwise"
+    value: ${{ steps.check.outputs.present }}

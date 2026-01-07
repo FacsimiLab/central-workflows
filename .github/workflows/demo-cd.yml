@@ -1,0 +1,27 @@
+name: Demo-CD
+
+on:
+  push:
+    branches:
+      - release
+  pull_request:
+    branches:
+      - release
+    types:
+      - opened
+      - ready_for_review
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: read
+  actions: read
+
+jobs:
+  cd:
+    uses: facsimilab/central-workflows/.github/workflows/release.yml@main
+    with:
+      ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+    secrets:
+      SSH_PRIVATE_KEY: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
+      SSH_PUBLIC_KEY: ${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}

@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Release
 
 on:
   workflow_call:
@@ -12,7 +12,7 @@ on:
         description: 'Git ref to checkout (branch or SHA)'
         required: false
         type: string
-        default: 'main'
+        default: 'release'
       build:
         required: false
         type: string
@@ -20,7 +20,7 @@ on:
       commit:
         required: false
         type: string
-        default: 'false'
+        default: 'true'
       git_config_user:
         required: false
         type: string
@@ -33,7 +33,7 @@ on:
       tag:
         required: false
         type: string
-        default: 'false'
+        default: 'true'
       changelog:
         required: false
         type: string
@@ -41,11 +41,11 @@ on:
       vcs_release:
         required: false
         type: string
-        default: 'false'
+        default: 'true'
       push:
         required: false
         type: string
-        default: 'false'
+        default: 'true'
     secrets:
       SSH_PRIVATE_KEY:
         required: false
@@ -63,7 +63,7 @@ concurrency:
 
 jobs:
 
-  continuous-integration:
+  release:
     runs-on: ${{ inputs.action-runs-on }}
     env: 
       LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
@@ -85,7 +85,7 @@ jobs:
 
       - name: Detect SSH key
         id: ssh_key_present
-        uses: facsimilab/central-workflows/.github/actions/secret-present@main
+        uses: ./.github/actions/secret-present
         with:
           value: ${{ secrets.SSH_PRIVATE_KEY || '' }}
 
@@ -118,6 +118,31 @@ jobs:
           LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
         run: |
           bash ./.central-workflows/scripts/git/log-worktree.sh
+
+      - name: List and delete pre-release tags
+        id: list_tags
+        run: |
+          echo "Searching for tags containing 'rc', 'main', 'beta', or 'alpha'."
+          TAGS=$(git tag -l "*-rc*" "*-main*" "*-beta*" "*-alpha*")
+          echo "Found tags:"
+          echo "$TAGS"
+          if [ -z "$TAGS" ]; then
+            echo "No pre-release tags found."
+            echo "tags_to_delete=" > tags.log
+          else
+            echo "tags_to_delete=$TAGS" > tags.log
+
+            echo "Deleting local tags..."
+            echo $TAGS | xargs -n 1 git tag -d
+
+            echo "Deleting remote tags..."
+            for TAG in $TAGS; do
+              git push origin --delete $TAG || echo "Failed to delete $TAG from remote."
+            done
+          fi
+
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'."
+          echo "Completed deleting all tags containing 'rc', 'main', 'beta', or 'alpha'." >> $GITHUB_STEP_SUMMARY
 
       - name: Check for PSR config file
         id: psr-config-file
@@ -178,3 +203,54 @@ jobs:
           echo "Released: ${{ steps.psr-ci.outputs.released }}" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
           cat CHANGELOG.md >> $GITHUB_STEP_SUMMARY
+
+  # update-main:
+  #   runs-on: ${{ inputs.action-runs-on }}
+  #   if: startsWith(github.ref_name, 'release')
+  #   needs: continuous-delivery
+  #   permissions:
+  #     contents: write
+  #   steps:
+  #     - name: Checkout Repository at workflow SHA
+  #       uses: actions/checkout@v6.0.1
+  #       with:
+  #         fetch-depth: 0
+  #         ref: ${{ inputs.ref }}
+
+  #     - name: Force correct release branch on workflow SHA
+  #       run: git checkout -B ${{ inputs.ref }}
+
+  #     - name: Set up SSH agent
+  #       uses: webfactory/ssh-agent@v0.9.0
+  #       with:
+  #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+  #     - name: Convert HTTPS remote to SSH
+  #       run: |
+  #         HTTPS_URL=$(git remote get-url origin)
+  #         if [[ "$HTTPS_URL" == https://github.com/* ]]; then
+  #           SSH_URL=$(echo "$HTTPS_URL" | sed -E 's#https://github.com/#git@github.com:#')
+  #           git remote set-url origin "$SSH_URL"
+  #         fi
+  #         git remote -v
+
+  #     - name: Update main branch
+  #       run: |
+  #         BRANCH=$(git rev-parse --abbrev-ref HEAD)
+  #         if [ "$BRANCH" != "release" ]; then
+  #           echo "Not on release branch ($BRANCH), skipping merge to main."
+  #           exit 0
+  #         fi
+
+  #         # Ensure main is up to date
+  #         git fetch origin main:main
+
+  #         git checkout main || git checkout -b main origin/main
+
+  #         if git merge release -v -m "ci: merge release into main"; then
+  #           git push origin main
+  #           echo "Successfully merged 'release' into 'main' and pushed." >> $GITHUB_STEP_SUMMARY
+  #         else
+  #           echo "Merge failed — possible conflicts. Manual resolution required." >> $GITHUB_STEP_SUMMARY
+  #           exit 1
+  #         fi
