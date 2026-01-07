@@ -33,7 +33,8 @@ runs:
         echo "Current directory: $(pwd)"
         mkdir -p ./github/log
         echo ""
-        PSR_SUMMARY_FILE_PATH="./github/log/psr_summary.md"
+        PSR_SUMMARY_FILE_PATH="./.github/log/psr_summary.md"
+        echo "Creating summary file at: $PSR_SUMMARY_FILE_PATH"
         touch "$PSR_SUMMARY_FILE_PATH"
         echo "psr-summary-file-path=$PSR_SUMMARY_FILE_PATH" >> "$GITHUB_OUTPUT"
 
