@@ -197,6 +197,7 @@ jobs:
           echo "## Python Semantic Release - GitHub Action" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
           echo "Version: ${{ steps.psr-ci.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo ""  >> $GITHUB_STEP_SUMMARY
           printf "Tags: \n$(git tag -l)" >> $GITHUB_STEP_SUMMARY
           echo ""  >> $GITHUB_STEP_SUMMARY
           echo "Released: ${{ steps.psr-ci.outputs.released }}" >> $GITHUB_STEP_SUMMARY
