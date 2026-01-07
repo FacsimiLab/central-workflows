@@ -10,7 +10,7 @@ REMOTE=origin
 LOG_FILE=${LOG_FILE:-"$REPO_ROOT/.github/log/log-worktree.log"}
 cd "$REPO_ROOT"
 
-. ./scripts/logger/bash-logger.sh
+. ./.central-workflows/scripts/logger/bash-logger.sh
 create_log_file "$LOG_FILE"
 
 mkdir -p "worktree"
