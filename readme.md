@@ -1,5 +1,7 @@
 # Central Workflows
 
+[![Demo-CI](https://github.com/FacsimiLab/central-workflows/actions/workflows/demo-ci.yml/badge.svg)](https://github.com/FacsimiLab/central-workflows/actions/workflows/demo-ci.yml) [![Demo-CD](https://github.com/FacsimiLab/central-workflows/actions/workflows/demo-cd.yml/badge.svg)](https://github.com/FacsimiLab/central-workflows/actions/workflows/demo-cd.yml)
+
 Reusable github actions for the FacsimiLab ecosystem
 
 ## Changelog
