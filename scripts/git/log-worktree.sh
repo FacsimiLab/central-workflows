@@ -13,7 +13,7 @@ cd "$REPO_ROOT"
 . ./scripts/logger/bash-logger.sh
 create_log_file "$LOG_FILE"
 
-mkdir -p "$WT_PATH"
+mkdir -p "worktree"
 
 CURRENT_BRANCH_SHA=$(git rev-parse --short HEAD)
 # echo "Current branch SHA: ${CURRENT_BRANCH_SHA}" # Debugging line
@@ -22,16 +22,16 @@ if git ls-remote --exit-code --heads "$REMOTE" "$BRANCH"; then
 
   logger INFO "Existing $BRANCH branch found — fetching CHANGELOG.md"
 
-  if [ -d "$WT_PATH" ] && git -C "$WT_PATH" rev-parse --is-inside-work-tree &>/dev/null; then
+  if [ -d "$WT_PATH" ] ; then #&& git -C "$WT_PATH" rev-parse --is-inside-work-tree &>/dev/null
     logger INFO "Worktree at '$WT_PATH' already exists."
   else
-    logger INFO "Creating worktree at '$WT_PATH'."
+    
     
     git worktree add \
-    "$BRANCH" \
     "$WT_PATH" \
-    --track \
-    "$REMOTE/$BRANCH" || logger INFO "Worktree for '$BRANCH' already exists."
+    "$REMOTE/$BRANCH"
+
+    logger INFO "Created worktree at '$WT_PATH'."
   fi
 
 
@@ -41,6 +41,7 @@ if git ls-remote --exit-code --heads "$REMOTE" "$BRANCH"; then
    git fetch ${REMOTE}
    git merge "$REMOTE/$BRANCH" "$BRANCH" -m "ci: updated the log branch from $REMOTE/$BRANCH"
   )
+  logger INFO "Completed: Updating worktree branch '$BRANCH' from remote '$REMOTE/$BRANCH'"
 
 
 else
@@ -51,7 +52,7 @@ else
     --orphan \
     -b "$BRANCH" \
     "$WT_PATH"
-
+  logger INFO "Created new orphaned worktree branch '$BRANCH' at '$WT_PATH'"
 fi
 
 # Start a subshell to work within the worktree
@@ -82,3 +83,9 @@ logger INFO "Pushing '$BRANCH' branch to remote '$REMOTE'"
 git push -u "$REMOTE" "$BRANCH"
 
 logger INFO "Updated the '$BRANCH' branch on remote '$REMOTE'."
+
+rm CHANGELOG.md || logger WARN "Could not delete the CHANGELOG.md from main working directory"
+
+logger INFO "Completed the log update script. Exiting."
+
+exit 0
