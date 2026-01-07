@@ -37,7 +37,7 @@ upload_to_release = true
 
 [tool.semantic_release.commit_author]
 env = "GIT_COMMIT_AUTHOR"
-default = "Pranav Kumar Mishra <62562712+pranavmishra90@users.noreply.github.com>"
+default = "FacsimiLab Bot <195262995+facsimilab-bot@users.noreply.github.com>"
 
 [tool.semantic_release.commit_parser_options]
 allowed_tags = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "style", "refactor", "test"]

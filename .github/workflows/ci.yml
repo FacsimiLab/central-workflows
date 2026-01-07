@@ -22,12 +22,12 @@ on:
         type: string
         default: 'false'
       git_config_user:
-        required: false
+        required: true
         type: string
         description: 'User name to use for git commits'
         default: 'FacsimiLab Bot'
       git_config_email:
-        required: false
+        required: true
         type: string
         default: '195262995+facsimilab-bot@users.noreply.github.com'
       tag:
