@@ -61,10 +61,14 @@ runs:
           fi
         } > PSR_SUMMARY_FILE_PATH
 
+        cat "$PSR_SUMMARY_FILE_PATH"
+
     - id: validate-summary
       shell: bash
       run: |
-        echo "Validating the generated summary file..."
+        echo "Validating the generated summary file at $PSR_SUMMARY_FILE_PATH..."
+        ls -l "$PSR_SUMMARY_FILE_PATH"
+        
         if [ -f "$PSR_SUMMARY_FILE_PATH" ]; then
           echo "Summary file created successfully at: $PSR_SUMMARY_FILE_PATH"
           head -n 10 "$PSR_SUMMARY_FILE_PATH"
