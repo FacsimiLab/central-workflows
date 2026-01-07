@@ -91,7 +91,7 @@ jobs:
 
       - name: Set up SSH agent
         if: ${{ steps.ssh_key_present.outputs.present == 'true' }}
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.9.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -172,7 +172,7 @@ jobs:
 
       - name: Python Semantic Release
         id: psr-ci
-        uses: pranavmishra90/semvar-docker@v0.2.0
+        uses: pranavmishra90/semvar-docker@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           git_committer_email: ${{ inputs.git_config_email }}
@@ -221,7 +221,7 @@ jobs:
   #       run: git checkout -B ${{ inputs.ref }}
 
   #     - name: Set up SSH agent
-  #       uses: webfactory/ssh-agent@v0.9.0
+  #       uses: webfactory/ssh-agent@v0.9.1
   #       with:
   #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
