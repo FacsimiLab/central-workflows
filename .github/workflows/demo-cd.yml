@@ -22,6 +22,16 @@ jobs:
     uses: facsimilab/central-workflows/.github/workflows/release.yml@main
     with:
       ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      build: "false"
+      changelog: "true"
+      commit: "true"
+      git_config_user: ${{ github.actor }}
+      git_config_email: ${{ github.actor_id}}+${{ github.actor }}@users.noreply.github.com
+      tag: "true"
+      push: "true"
+      vcs_release: "false" #this should be set to true, but is "false" for the demo purpose
+      
     secrets:
       SSH_PRIVATE_KEY: ${{ secrets.FACSIMILAB_BOT_SSHKEY }}
       SSH_PUBLIC_KEY: ${{ secrets.FACSIMILAB_BOT_SSH_PUBKEY }}
+      
