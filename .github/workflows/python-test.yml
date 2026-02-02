@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 1
       - name: Setup | Force correct release branch on workflow SHA
@@ -32,7 +32,7 @@ jobs:
           git checkout -B ${{ github.ref_name }}
 
       - name: Checkout central workflows
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           repository: FacsimiLab/central-workflows
           path: .central-workflows
