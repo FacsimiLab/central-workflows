@@ -69,7 +69,7 @@ jobs:
       LOG_FILE: ${{ github.workspace }}/.github/log/ci.log
     steps:
       - name: Checkout Repository at workflow SHA
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           ref: ${{ inputs.ref }}
@@ -78,7 +78,7 @@ jobs:
         run: git checkout -B ${{ inputs.ref }}
 
       - name: Checkout central workflows
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           repository: FacsimiLab/central-workflows
           path: .central-workflows
@@ -217,7 +217,7 @@ jobs:
   #     contents: write
   #   steps:
   #     - name: Checkout Repository at workflow SHA
-  #       uses: actions/checkout@v6.0.1
+  #       uses: actions/checkout@v6.0.2
   #       with:
   #         fetch-depth: 0
   #         ref: ${{ inputs.ref }}

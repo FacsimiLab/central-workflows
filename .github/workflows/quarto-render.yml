@@ -48,7 +48,7 @@ jobs:
     runs-on: ${{ inputs.action-runs-on }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           fetch-depth: 1
@@ -59,7 +59,7 @@ jobs:
           git checkout -B ${{ github.ref_name }}
 
       - name: Checkout central workflows
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           repository: FacsimiLab/central-workflows
           path: .central-workflows
